@@ -1,4 +1,5 @@
 import AttendeeDto from '@/models/deiwed/AttendeeDto';
+import SessionDto from '@/models/deiwed/SessionDto';
 import DeiwedError from '@/models/error/DeiwedError';
 import axios from 'axios';
 
@@ -11,6 +12,18 @@ export default class RemoteServices {
   static async getAttendees(): Promise<AttendeeDto[]> {
     return httpClient
       .get('/attendees')
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
+  static async getSessions(): Promise<SessionDto[]> {
+    return httpClient
+      .get('/sessions')
       .then((response) => response.data)
       .catch(async (error) => {
         throw new DeiwedError(
