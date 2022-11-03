@@ -21,6 +21,19 @@ export default class RemoteServices {
       });
   }
 
+  // NEW:
+  static async createAttendee(attendee: AttendeeDto): Promise<AttendeeDto> {
+    return httpClient
+      .post('/attendees', attendee)
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
   static async getSessions(): Promise<SessionDto[]> {
     return httpClient
       .get('/sessions')
