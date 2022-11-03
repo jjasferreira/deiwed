@@ -3,7 +3,6 @@ target/
 !**/src/test/**/target/
 data/
 nano.save
-application.properties
 
 ### STS ###
 .apt_generated
