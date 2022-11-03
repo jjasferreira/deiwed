@@ -125,6 +125,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 @Component
 export default class TopBar extends Vue {
