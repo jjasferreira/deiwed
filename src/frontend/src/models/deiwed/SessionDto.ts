@@ -1,4 +1,4 @@
-export default class AttendeeDto {
+export default class SessionDto {
   id: number = 0;
   poster: undefined;
   subject: string = '';

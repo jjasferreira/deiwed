@@ -13,8 +13,7 @@ START mvn clean spring-boot:run
 :: Then it goes to ./src/frontend and runs the npm command to build the frontend Vue app that accesses the backend API.
 CD ..
 IF EXIST frontend CD frontend
-START npm install
-npm run start
+START npm install && npm run start
 
 ECHO "Done! Server running at http://localhost:8081"
 

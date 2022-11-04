@@ -1,4 +1,5 @@
 import AttendeeDto from '@/models/deiwed/AttendeeDto';
+import DishDto from '@/models/deiwed/DishDto';
 import SessionDto from '@/models/deiwed/SessionDto';
 import DeiwedError from '@/models/error/DeiwedError';
 import axios from 'axios';
@@ -21,10 +22,45 @@ export default class RemoteServices {
       });
   }
 
-  // NEW:
   static async createAttendee(attendee: AttendeeDto): Promise<AttendeeDto> {
     return httpClient
       .post('/attendees', attendee)
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
+  static async editAttendee(attendee: AttendeeDto): Promise<AttendeeDto> {
+    return httpClient
+      .put(`/attendees/${attendee.id}`, attendee)
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
+  static async deleteAttendee(attendee: AttendeeDto): Promise<void> {
+    return httpClient
+      .delete(`/attendees/${attendee.id}`)
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
+  static async getDishes(): Promise<DishDto[]> {
+    return axios
+      .get('https://eindhoven.rnl.tecnico.ulisboa.pt/food-store/api/v1/dishes')
       .then((response) => response.data)
       .catch(async (error) => {
         throw new DeiwedError(
