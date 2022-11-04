@@ -171,9 +171,14 @@ export default class TopBar extends Vue {
             icon: 'fas fa-users',
           },
           {
+            name: 'Dishes',
+            path: '/dishes',
+            icon: 'fas fa-utensils',
+          },
+          {
             name: 'Sessions',
             path: '/sessions',
-            icon: '',
+            icon: 'fas fa-chalkboard-user',
           },
         ],
       },
