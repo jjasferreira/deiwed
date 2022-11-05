@@ -44,7 +44,7 @@
         :loading="loading"
         single-select
         locale="pt-PT"
-        no-data-text="Não existem participantes registados"
+        no-data-text="Não existem sessões registadas"
         no-results-text="Nenhuma sessão corresponde aos critérios indicados"
         sort-by="subject"
       >

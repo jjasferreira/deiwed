@@ -7,7 +7,7 @@ export default class SessionDto {
   subject: string = '';
   speaker: string = '';
   date: string = '';
-  normalDish = new DishDto();
-  vegetarianDish = new DishDto();
+  normalDish: DishDto = new DishDto();
+  vegetarianDish: DishDto = new DishDto();
   participants: Array<AttendeeDto> = [];
 }
