@@ -27,7 +27,7 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel v-model="panel">
-          <v-expansion-panel-header>Editar participante</v-expansion-panel-header>
+          <v-expansion-panel-header>Editar participante (por ID)</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-form>
               <v-container>
@@ -53,13 +53,7 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Pesquisar"
-        single-line
-        hide-details
-      ></v-text-field>
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line hide-details></v-text-field>
       <v-data-table
         :headers="headers"
         :items="attendees"
@@ -76,7 +70,7 @@
           <v-chip v-else color="green" text-color="white"> Bolseiro </v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn @click="deleteAttendee(item)" class="mx-2" fab dark x-small color="red"><v-icon dark>mdi-delete</v-icon></v-btn>
+          <v-btn @click="deleteAttendee(item)" class="mx-2" fab dark x-small color="red" elevation="2"><v-icon dark>mdi-delete</v-icon></v-btn>
         </template>
       </v-data-table>
     </v-card-text>

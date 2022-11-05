@@ -1,6 +1,6 @@
 <template>
   <v-card :flat="$store.getters.isMobile" class="table pb-4">
-    <v-card-title>Pratos disponíveis para o almoço do DEI às Quartas</v-card-title>
+    <v-card-title>Pratos disponíveis para os almoços do DEI às Quartas</v-card-title>
     <v-card-text>
       <v-text-field v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line hide-details></v-text-field>
       <v-data-table
@@ -15,8 +15,8 @@
         sort-by="name"
       >
         <template v-slot:[`item.vegetarian`]="{ item }">
-          <v-chip v-if="item.vegetarian === true" color="lime" text-color="white"> V </v-chip>
-          <v-chip v-else color="brown" text-color="white"> N </v-chip>
+          <v-icon v-if="item.vegetarian === true" color="green"> mdi-leaf </v-icon>
+          <v-icon v-else> mdi-leaf-off </v-icon>
         </template>
       </v-data-table>
     </v-card-text>

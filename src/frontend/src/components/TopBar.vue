@@ -166,17 +166,22 @@ export default class TopBar extends Vue {
         icon: 'fas fa-person-chalkboard',
         list: [
           {
-            name: 'Attendees',
+            name: 'Participantes',
             path: '/attendees',
             icon: 'fas fa-users',
           },
           {
-            name: 'Dishes',
+            name: 'Pedidos',
+            path: '/orders',
+            icon: 'fas fa-truck-fast',
+          },
+          {
+            name: 'Pratos',
             path: '/dishes',
             icon: 'fas fa-utensils',
           },
           {
-            name: 'Sessions',
+            name: 'Sessões',
             path: '/sessions',
             icon: 'fas fa-chalkboard-user',
           },
