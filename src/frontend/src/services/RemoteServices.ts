@@ -1,5 +1,6 @@
 import AttendeeDto from '@/models/deiwed/AttendeeDto';
 import DishDto from '@/models/deiwed/DishDto';
+import OrderDto from '@/models/deiwed/OrderDto';
 import SessionDto from '@/models/deiwed/SessionDto';
 import DeiwedError from '@/models/error/DeiwedError';
 import axios from 'axios';
@@ -9,7 +10,10 @@ httpClient.defaults.timeout = 50000;
 httpClient.defaults.baseURL = process.env.VUE_APP_ROOT_API;
 httpClient.defaults.headers.post['Content-Type'] = 'application/json';
 
+const token = 'ist199259';
+
 export default class RemoteServices {
+
   static async getAttendees(): Promise<AttendeeDto[]> {
     return httpClient
       .get('/attendees')
@@ -90,6 +94,32 @@ export default class RemoteServices {
         return dishes.map((dish) => dish.name);
     });
   };
+
+  static async getOrders(): Promise<OrderDto[]> {
+    return axios
+      .get('https://eindhoven.rnl.tecnico.ulisboa.pt/food-store/api/v1/orders')
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
+  static async createOrder(order: OrderDto): Promise<OrderDto[]> {
+    return axios
+      .create({baseURL: 'https://eindhoven.rnl.tecnico.ulisboa.pt/food-store/api/v1',
+              headers: {'Authorization': 'Bearer ' + token}})
+      .post('/orders/' + order.date, order)
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
 
   static async getSessions(): Promise<SessionDto[]> {
     return httpClient

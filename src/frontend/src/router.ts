@@ -18,6 +18,11 @@ const router = new Router({
       component: () => import('@/views/deiwed/AttendeesView.vue'),
     },
     {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('@/views/deiwed/OrdersView.vue'),
+    },
+    {
       path: '/dishes',
       name: 'dishes',
       component: () => import('@/views/deiwed/DishesView.vue'),
