@@ -70,9 +70,42 @@ export default class RemoteServices {
       });
   }
 
+  static async getNormalDishes(): Promise<DishDto[]> {
+    return RemoteServices.getDishes().then((dishes) => {
+        return dishes.filter((dish) => !dish.vegetarian).sort((a, b) => a.name.localeCompare(b.name));
+    });
+  };
+  static async getNormalDishesNames(): Promise<string[]> {
+    return this.getNormalDishes().then((dishes) => {
+        return dishes.map((dish) => dish.name);
+    });
+  };
+  static async getVegetarianDishes(): Promise<DishDto[]> {
+    return RemoteServices.getDishes().then((dishes) => {
+        return dishes.filter((dish) => dish.vegetarian).sort((a, b) => a.name.localeCompare(b.name));
+    });
+  };
+  static async getVegetarianDishesNames(): Promise<string[]> {
+    return this.getVegetarianDishes().then((dishes) => {
+        return dishes.map((dish) => dish.name);
+    });
+  };
+
   static async getSessions(): Promise<SessionDto[]> {
     return httpClient
       .get('/sessions')
+      .then((response) => response.data)
+      .catch(async (error) => {
+        throw new DeiwedError(
+          await this.errorMessage(error),
+          error.response.data.code
+        );
+      });
+  }
+
+  static async createSession(session: SessionDto): Promise<SessionDto> {
+    return httpClient
+      .post('/sessions', session)
       .then((response) => response.data)
       .catch(async (error) => {
         throw new DeiwedError(
