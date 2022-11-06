@@ -70,6 +70,9 @@
           <v-chip v-else color="green" text-color="white"> Bolseiro </v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
+          <v-btn @click="loadAttendeeDetails(item)" class="mx-2" fab dark x-small color="brown" elevation="2"><v-icon dark>mdi-arrow-right</v-icon></v-btn>
+        </template>
+        <template v-slot:[`item.actions2`]="{ item }">
           <v-btn @click="deleteAttendee(item)" class="mx-2" fab dark x-small color="red" elevation="2"><v-icon dark>mdi-delete</v-icon></v-btn>
         </template>
       </v-data-table>
@@ -127,7 +130,8 @@ export default class AttendeesView extends Vue {
     { text: 'Nome', value: 'name', sortable: true, filterable: true },
     { text: 'IST ID', value: 'istId', sortable: true, filterable: true },
     { text: 'Tipo', value: 'type', sortable: true, filterable: false },
-    { text: 'Eliminar', value: 'actions', sortable: false, filterable: false },
+    { text: 'Aceder', value: 'actions', sortable: false, filterable: false },
+    { text: 'Eliminar', value: 'actions2', sortable: false, filterable: false },
   ];
 
   async mounted() {
@@ -173,6 +177,10 @@ export default class AttendeesView extends Vue {
       this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async loadAttendeeDetails(attendee: AttendeeDto) {
+    this.$router.push({ name: 'attendee_details', params: { attendeeId: attendee.id.toString() } });
   }
 }
 

@@ -77,7 +77,7 @@
 
 
       <h3 class="mb-2">Eliminar sessão</h3>
-      <v-btn @click="deleteSession(parseInt($route.params.sessionId))" elevation="2" color="red" outlined> Eliminar <v-icon right dark>mdi-delete</v-icon></v-btn>
+      <v-btn @click="deleteSession()" elevation="2" color="red" outlined> Eliminar <v-icon right dark>mdi-delete</v-icon></v-btn>
     </v-card-text>
   </v-card>
     
@@ -195,10 +195,10 @@ export default class SessionDetailsView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async deleteSession(sessionId: number) {
+  async deleteSession() {
     await this.$store.dispatch('loading');
     try {
-      await RemoteServices.deleteSession(sessionId);
+      await RemoteServices.deleteSession(this.session.id);
       this.$router.push('/sessions');
     } catch (error) {
       this.$store.dispatch('error', error);

@@ -80,7 +80,7 @@ export default class SessionsView extends Vue {
   headers: DataTableHeader[] = [
     { text: 'ID', value: 'id', sortable: true, filterable: true },
     { text: 'Tema', value: 'subject', sortable: true, filterable: true },
-    { text: 'Orador', value: 'speaker', sortable: true, filterable: false },
+    { text: 'Orador', value: 'speaker', sortable: true, filterable: true },
     { text: 'Data', value: 'date', sortable: true, filterable: true },
     { text: 'Aceder', value: 'access', sortable: false, filterable: false },
   ];
@@ -140,7 +140,7 @@ export default class SessionsView extends Vue {
   }
 
   async loadSessionDetails(session: SessionDto) {
-    this.$router.push({ name: 'details', params: { sessionId: session.id.toString() } });
+    this.$router.push({ name: 'session_details', params: { sessionId: session.id.toString() } });
   }
 
 }
