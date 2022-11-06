@@ -107,11 +107,11 @@ export default class RemoteServices {
       });
   }
 
-  static async createOrder(order: OrderDto): Promise<OrderDto[]> {
+  static async createOrder(date: string, optionsIds: {[option: string]: number}): Promise<OrderDto> {
     return axios
       .create({baseURL: 'https://eindhoven.rnl.tecnico.ulisboa.pt/food-store/api/v1',
               headers: {'Authorization': 'Bearer ' + token}})
-      .post('/orders/' + order.date, order)
+      .post('/orders/' + date, optionsIds)
       .then((response) => response.data)
       .catch(async (error) => {
         throw new DeiwedError(

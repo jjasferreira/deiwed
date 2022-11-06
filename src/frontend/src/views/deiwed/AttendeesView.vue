@@ -103,14 +103,11 @@ export default class AttendeesView extends Vue {
   items_translation: { [key: string]: string } = {'Bolseiro': 'GRANTEE', 'Docente': 'TEACHER'};
 
   async createAttendee() {
-    this.panel = false;
+    if (this.new_name === '' || this.new_istId === '' || this.new_type === '') {
+      this.$store.dispatch('error', 'É obrigatório preencher todos os campos'); return; }
     await this.$store.dispatch('loading');
+    this.panel = false;
     try {
-      if (this.new_name === '' || this.new_istId === '' || this.new_type === '') {
-        this.$store.dispatch('error', 'É obrigatório preencher todos os campos');
-        await this.$store.dispatch('clearLoading');
-        return;
-      }
       await RemoteServices.createAttendee({"id":0, "name":this.new_name, "istId":this.new_istId, "type":this.items_translation[this.new_type]});
       this.attendees = await RemoteServices.getAttendees();
       this.loading = false;

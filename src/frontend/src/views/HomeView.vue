@@ -6,11 +6,11 @@
       </div>
     </div>
 
-    <v-toolbar prominent dark height='100px' src="@/assets/img/background.png">
-      <v-toolbar-title class='mx-auto mb-5' elevation="3" > Bem-vindo ao sistema de gestão dos eventos {{ appName }} </v-toolbar-title>
+    <v-toolbar prominent dark height='80px' src="@/assets/img/background.png">
+      <v-toolbar-title class='mx-auto mb-3' elevation="2" > Bem-vindo ao sistema de gestão dos eventos {{ appName }} </v-toolbar-title>
     </v-toolbar>
 
-    <v-row class="d-flex justify-center mt-0">
+    <v-row class="d-flex justify-center mt-3">
       <v-col cols="12" md="4">
         <v-card class='mx-auto' height='500px'>
           <v-img @click='goTo(sessions)' src='https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' height='300px'></v-img>
