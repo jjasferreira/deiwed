@@ -181,9 +181,9 @@ export default class RemoteServices {
       });
   }
 
-  static async updateSessionWithAttendees(sessionId: number, participantsIds: number[]): Promise<SessionDto> {
+  static async updateSession(session: SessionDto): Promise<SessionDto> {
     return httpClient
-      .put(`/sessions/${sessionId}/participantsIds`, participantsIds)
+      .put(`/sessions/${session.id}`, session)
       .then((response) => response.data)
       .catch(async (error) => {
         throw new DeiwedError(

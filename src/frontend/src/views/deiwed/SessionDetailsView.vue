@@ -35,10 +35,10 @@
       </v-data-table>
 
 
-      <h3 class="mb-2">Participantes registados</h3>
+      <h3 class="mb-2">Participantes inscritos</h3>
       <v-expansion-panels v-model="panel">
         <v-expansion-panel v-model="panel">
-          <v-expansion-panel-header>Adicionar novo participante à sessão</v-expansion-panel-header>
+          <v-expansion-panel-header>Inscrever novo participante na sessão</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-form>
               <v-container>
@@ -47,7 +47,7 @@
                     <v-select v-model="new_participant_name" :items="participantsNotRegisteredNames" :rules="participantRules" label="Participante" required></v-select>
                   </v-col>
                   <v-col cols="12" md="1" style="text-align: left">
-                    <v-btn @click='addAttendeeToSession(parseInt($route.params.sessionId))' class="mx-2" fab dark small color="blue"><v-icon dark>mdi-plus</v-icon></v-btn>
+                    <v-btn @click='addAttendeeToSession()' class="mx-2" fab dark small color="blue"><v-icon dark>mdi-plus</v-icon></v-btn>
                   </v-col>
                 </v-row>
               </v-container>
@@ -62,7 +62,7 @@
         :loading="loading"
         single-select
         locale="pt-PT"
-        no-data-text="Não existem participantes registados"
+        no-data-text="Não existem participantes inscritos"
         no-results-text="Nenhum participante corresponde aos critérios indicados"
         sort-by="name"
       >
@@ -71,13 +71,13 @@
           <v-chip v-else color="green" text-color="white"> Bolseiro </v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn @click="removeAttendeeFromSession(item.id, parseInt($route.params.sessionId))" class="mx-2" fab dark x-small color="orange" elevation="2"><v-icon dark>mdi-close</v-icon></v-btn>
+          <v-btn @click="removeAttendeeFromSession(item.id)" class="mx-2" fab dark x-small color="red" elevation="2"><v-icon dark>mdi-close</v-icon></v-btn>
         </template>
       </v-data-table>
 
 
       <h3 class="mb-2">Eliminar sessão</h3>
-      <v-btn @click="deleteSession(parseInt($route.params.sessionId))" elevation="2" color="red"> Eliminar <v-icon right dark>mdi-delete</v-icon></v-btn>
+      <v-btn @click="deleteSession(parseInt($route.params.sessionId))" elevation="2" color="red" outlined> Eliminar <v-icon right dark>mdi-delete</v-icon></v-btn>
     </v-card-text>
   </v-card>
     
@@ -121,7 +121,7 @@ export default class SessionDetailsView extends Vue {
     { text: 'Nome', value: 'name', sortable: true, filterable: true },
     { text: 'IST ID', value: 'istId', sortable: true, filterable: true },
     { text: 'Tipo', value: 'type', sortable: true, filterable: true },
-    { text: 'Remover da sessão', value: 'actions', sortable: false, filterable: false },
+    { text: 'Desinscrever da sessão', value: 'actions', sortable: false, filterable: false },
   ];
 
   async mounted() {
@@ -131,7 +131,7 @@ export default class SessionDetailsView extends Vue {
       this.session = await RemoteServices.getSession(sessionId);
       this.normalDish = await RemoteServices.getDish(this.session.normalDishId);
       this.vegetarianDish = await RemoteServices.getDish(this.session.vegetarianDishId);
-      this.updateParticipants();
+      this.updateSession();
       this.loading = false;
     } catch (error) {
       this.$store.dispatch('error', error);
@@ -143,7 +143,10 @@ export default class SessionDetailsView extends Vue {
     return parseInt(this.$route.params.sessionId);
   }
 
-  async updateParticipants() {
+  async updateSession() {
+    this.participants = []; this.participantsNotRegistered = []; this.participantsNotRegisteredNames = [];
+    let sessionId = this.sessionId();
+    this.session = await RemoteServices.getSession(sessionId);
     for (let participantId of this.session.participantsIds) {
         let participant = await RemoteServices.getAttendee(participantId);
         this.participants.push(participant);}
@@ -158,14 +161,17 @@ export default class SessionDetailsView extends Vue {
     }
   }
 
-  async addAttendeeToSession(sessionId: number) {
+  async addAttendeeToSession() {
     await this.$store.dispatch('loading');
     try {
       let new_participantId = 0;
       for (const a of this.participantsNotRegistered) {if (a.name === this.new_participant_name) {new_participantId = a.id; break;}}
-      this.session.participantsIds.push(new_participantId);
-      await RemoteServices.updateSessionWithAttendees(sessionId, this.session.participantsIds);
-      this.updateParticipants();
+      let new_participantsIds = this.session.participantsIds
+      new_participantsIds.push(new_participantId);
+      await RemoteServices.updateSession({"id": this.session.id, "subject": this.session.subject, "speaker": this.session.speaker, "date": this.session.date,
+      "normalDishId": this.session.normalDishId, "vegetarianDishId": this.session.normalDishId, "participantsIds": new_participantsIds});
+      this.updateSession();
+      this.new_participant_name = '';
       this.panel = false;
       this.loading = false;
     } catch (error) {
@@ -174,12 +180,14 @@ export default class SessionDetailsView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async removeAttendeeFromSession(attendeeId: number, sessionId: number) {
+  async removeAttendeeFromSession(attendeeId: number) {
     await this.$store.dispatch('loading');
     try {
-      this.session.participantsIds = this.session.participantsIds.filter((a) => a !== attendeeId);
-      await RemoteServices.updateSessionWithAttendees(sessionId, this.session.participantsIds);
-      this.updateParticipants();
+      let new_participantsIds = this.session.participantsIds
+      new_participantsIds = new_participantsIds.filter((a) => a !== attendeeId);
+      await RemoteServices.updateSession({"id": this.session.id, "subject": this.session.subject, "speaker": this.session.speaker, "date": this.session.date,
+      "normalDishId": this.session.normalDishId, "vegetarianDishId": this.session.normalDishId, "participantsIds": new_participantsIds});
+      this.updateSession();
       this.loading = false;
     } catch (error) {
       this.$store.dispatch('error', error);
