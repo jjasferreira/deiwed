@@ -6,6 +6,8 @@
 
 The frontend is a Vue application that uses the backend, a Spring Boot application. The user interacts with the frontend, which communicates with the backend, to manage data through a REST API. This backend application uses JPA to connect to a database and manage entities. DEIWed uses a Docker containerized MariaDB database to persist data.
 
+[Here](NOTES.md), you can find some notes about the application's development process and features.
+
 ## Configuring
 
 Before being able to run the application, you must open Docker Desktop.

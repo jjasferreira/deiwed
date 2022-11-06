@@ -36,8 +36,8 @@
 
 
       <h3 class="mb-2">Participantes inscritos</h3>
-      <v-expansion-panels v-model="panel">
-        <v-expansion-panel v-model="panel">
+      <v-expansion-panels v-model="panel1" class="mb-2">
+        <v-expansion-panel v-model="panel1">
           <v-expansion-panel-header>Inscrever novo participante na sessão</v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-form>
@@ -55,7 +55,7 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <v-data-table
+      <v-data-table class="mb-4"
         :headers="participants_headers"
         :items="participants"
         :search="search"
@@ -74,6 +74,41 @@
           <v-btn @click="removeAttendeeFromSession(item.id)" class="mx-2" fab dark x-small color="red" elevation="2"><v-icon dark>mdi-close</v-icon></v-btn>
         </template>
       </v-data-table>
+
+
+      <h3 class="mb-2">Editar sessão</h3>
+      <v-expansion-panels v-model="panel2" class="mb-10">
+        <v-expansion-panel v-model="panel2">
+          <v-expansion-panel-header>Editar sessão</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-form>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" md="3">
+                    <v-text-field v-model="edit_subject" :rules="subjectRules" label="Tema" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="2">
+                    <v-text-field v-model="edit_speaker" :rules="speakerRules" label="Orador" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="2">
+                    <v-text-field v-model="edit_date" :rules="dateRules" label="Data" required></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="2">
+                    <v-select v-model="edit_normalDishName" :items="items_normalDishNames" :rules="dishRules" label="Prato normal" required></v-select>
+                  </v-col>
+                  <v-col cols="12" md="2">
+                    <v-select v-model="edit_vegetarianDishName" :items="items_vegetarianDishNames" :rules="dishRules" label="Prato vegetariano" required></v-select>
+                  </v-col>
+                  <v-col cols="12" md="1" style="text-align: left">
+                    <v-btn @click='editSession()' class="mx-2" fab dark small color="green"><v-icon dark>mdi-pencil</v-icon></v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      
 
 
       <h3 class="mb-2">Eliminar sessão</h3>
@@ -98,7 +133,8 @@ export default class SessionDetailsView extends Vue {
   participantRules: any[] = [(v: string) => !!v || 'É obrigatório selecionar um participante'];
   search = '';
   loading = true;
-  panel = false;
+  panel1 = false;
+  panel2 = false;
   session: SessionDto = new SessionDto();
   normalDish: DishDto = new DishDto();
   vegetarianDish: DishDto = new DishDto();
@@ -106,6 +142,24 @@ export default class SessionDetailsView extends Vue {
   participantsNotRegistered: Array<AttendeeDto> = [];
   participantsNotRegisteredNames: Array<string> = [];
   new_participant_name = '';
+
+  edit_subject = '';
+  edit_speaker = '';
+  edit_date = '';
+  edit_normalDishName = '';
+  edit_vegetarianDishName = '';
+
+  normalDishes: Array<DishDto> = [];
+  vegetarianDishes: Array<DishDto> = [];
+  items_normalDishNames: Array<string> = [];
+  items_vegetarianDishNames: Array<string> = [];
+  
+  subjectRules: any[] = [(v: string) => !!v || 'É obrigatório indicar um tema'];
+  speakerRules: any[] = [(v: string) => !!v || 'É obrigatório indicar um orador'];
+  dishRules: any[] = [(v: string) => !!v || 'É obrigatório indicar um prato'];
+  dateRules = [
+    (v: string) => !!v || 'É obrigatório indicar uma data',
+    (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v) || 'A data deve ter o formato YYYY-MM-DD'];
 
   dishes_headers: DataTableHeader[] = [
     { text: 'ID', value: 'id', sortable: false, filterable: false },
@@ -131,6 +185,10 @@ export default class SessionDetailsView extends Vue {
       this.session = await RemoteServices.getSession(sessionId);
       this.normalDish = await RemoteServices.getDish(this.session.normalDishId);
       this.vegetarianDish = await RemoteServices.getDish(this.session.vegetarianDishId);
+      this.normalDishes = await RemoteServices.getNormalDishes();
+      this.items_normalDishNames = this.normalDishes.map(dish => dish.name);
+      this.vegetarianDishes = await RemoteServices.getVegetarianDishes();
+      this.items_vegetarianDishNames = this.vegetarianDishes.map(dish => dish.name);
       this.updateSession();
       this.loading = false;
     } catch (error) {
@@ -172,7 +230,7 @@ export default class SessionDetailsView extends Vue {
       "normalDishId": this.session.normalDishId, "vegetarianDishId": this.session.normalDishId, "participantsIds": new_participantsIds});
       this.updateSession();
       this.new_participant_name = '';
-      this.panel = false;
+      this.panel1 = false;
       this.loading = false;
     } catch (error) {
       this.$store.dispatch('error', error);
@@ -188,6 +246,35 @@ export default class SessionDetailsView extends Vue {
       await RemoteServices.updateSession({"id": this.session.id, "subject": this.session.subject, "speaker": this.session.speaker, "date": this.session.date,
       "normalDishId": this.session.normalDishId, "vegetarianDishId": this.session.normalDishId, "participantsIds": new_participantsIds});
       this.updateSession();
+      this.loading = false;
+    } catch (error) {
+      this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
+  async editSession() {
+    if (this.edit_subject === '' || this.edit_speaker === '' || this.edit_date === '' || this.edit_normalDishName === '' || this.edit_vegetarianDishName === '') {
+      this.$store.dispatch('error', 'Por favor preencha todos os campos'); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(this.edit_date)) {
+      this.$store.dispatch('error', 'A data deve ter o formato YYYY-MM-DD'); return; }
+    await this.$store.dispatch('loading');
+    try {
+      let edit_normalDishId = 0; let edit_vegetarianDishId = 0;
+      for (const d of this.normalDishes) {if (d.name === this.edit_normalDishName) {edit_normalDishId = d.id; break;}}
+      for (const d of this.vegetarianDishes) {if (d.name === this.edit_vegetarianDishName) {edit_vegetarianDishId = d.id; break;}}
+      await RemoteServices.updateSession({"id": this.session.id, "subject": this.edit_subject, "speaker": this.edit_speaker, "date": this.edit_date,
+      "normalDishId": edit_normalDishId, "vegetarianDishId": edit_vegetarianDishId, "participantsIds": this.session.participantsIds});
+      let sessionId = this.sessionId();
+      this.session = await RemoteServices.getSession(sessionId);
+      this.normalDish = await RemoteServices.getDish(this.session.normalDishId);
+      this.vegetarianDish = await RemoteServices.getDish(this.session.vegetarianDishId);
+      this.edit_subject = '';
+      this.edit_speaker = '';
+      this.edit_date = '';
+      this.edit_normalDishName = '';
+      this.edit_vegetarianDishName = '';
+      this.panel2 = false;
       this.loading = false;
     } catch (error) {
       this.$store.dispatch('error', error);

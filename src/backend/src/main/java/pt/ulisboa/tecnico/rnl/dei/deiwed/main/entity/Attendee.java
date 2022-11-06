@@ -29,8 +29,6 @@ public class Attendee {
 	@Column(name = "type", nullable = false)
 	private ATTENDEE_TYPE type;
 
-	// TODO: maybe add more fields? ...or maybe not? what makes sense here?
-
 	protected Attendee() {
 	}
 
