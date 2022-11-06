@@ -2,109 +2,97 @@ package pt.ulisboa.tecnico.rnl.dei.deiwed.main.dto;
 
 import java.io.Serializable;
 
-import java.sql.Date;
-
 import pt.ulisboa.tecnico.rnl.dei.deiwed.main.entity.Session;
 
 // Data Transfer Object, to communicate with frontend
 public class SessionDto implements Serializable {
     private long id;
-	private byte[] poster;
     private String subject;
     private String speaker;
-    private Date date;
-    private String normalDish;
-    private String vegetarianDish;
-    private String[] participants;
+    private String date;
+    private Integer normalDishId;
+    private Integer vegetarianDishId;
+    private Integer[] participantsIds;
 
-	public SessionDto() {
-	}
+    public SessionDto() {
+    }
 
-	public SessionDto(long id, byte[] poster, String subject, String speaker,
-    Date date, String normalDish, String vegetarianDish, String[] participants) {
+    public SessionDto(long id, String subject, String speaker,
+            String date, Integer normalDishId, Integer vegetarianDishId, Integer[] participantsIds) {
         this.id = id;
-		this.poster = poster;
-		this.subject = subject;
-		this.speaker = speaker;
+        this.subject = subject;
+        this.speaker = speaker;
         this.date = date;
-        this.normalDish = normalDish;
-        this.vegetarianDish = vegetarianDish;
-        this.participants = participants;
-	}
+        this.normalDishId = normalDishId;
+        this.vegetarianDishId = vegetarianDishId;
+        this.participantsIds = participantsIds;
+    }
 
-	public SessionDto(Session session) {
-		this(session.getId(), session.getPoster(), session.getSubject(),
-        session.getSpeaker(), session.getDate(), session.getNormalDish(),
-        session.getVegetarianDish(), session.getParticipants());
-	}
+    public SessionDto(Session session) {
+        this(session.getId(), session.getSubject(), session.getSpeaker(), session.getDate(),
+                session.getNormalDishId(), session.getVegetarianDishId(), session.getParticipantsIds());
+    }
 
-	public long getId() {
-		return this.id;
-	}
+    public long getId() {
+        return this.id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public byte[] getPoster() {
-		return this.poster;
-	}
+    public String getSubject() {
+        return this.subject;
+    }
 
-	public void setPoster(byte[] poster) {
-		this.poster = poster;
-	}
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
-	public String getSubject() {
-		return this.subject;
-	}
+    public String getSpeaker() {
+        return this.speaker;
+    }
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    public void setSpeaker(String speaker) {
+        this.speaker = speaker;
+    }
 
-	public String getSpeaker() {
-		return this.speaker;
-	}
-
-	public void setSpeaker(String speaker) {
-		this.speaker = speaker;
-	}
-
-    public Date getDate() {
+    public String getDate() {
         return this.date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public String getNormalDish() {
-        return this.normalDish;
+    public Integer getNormalDishId() {
+        return this.normalDishId;
     }
 
-    public void setNormalDish(String normalDish) {
-        this.normalDish = normalDish;
+    public void setNormalDishId(Integer normalDishId) {
+        this.normalDishId = normalDishId;
     }
 
-    public String getVegetarianDish() {
-        return this.vegetarianDish;
+    public Integer getVegetarianDishId() {
+        return this.vegetarianDishId;
     }
 
-    public void setVegetarianDish(String vegetarianDish) {
-        this.vegetarianDish = vegetarianDish;
+    public void setVegetarianDishId(Integer vegetarianDishId) {
+        this.vegetarianDishId = vegetarianDishId;
     }
 
-    public String[] getParticipants() {
-        return this.participants;
+    public Integer[] getParticipantsIds() {
+        return this.participantsIds;
     }
 
-    public void setParticipants(String[] participants) {
-        this.participants = participants;
+    public void setParticipantsIds(Integer[] participantsIds) {
+        this.participantsIds = participantsIds;
     }
 
-	@Override
-	public String toString() {
-		return String.format("SessionDto[id=%d, poster='%s', subject='%s', speaker='%s', date='%s', normalDish='%s', vegetarianDish='%s', participants='%s']",
-        id, poster, subject, speaker, date, normalDish, vegetarianDish, participants);
-	}
+    @Override
+    public String toString() {
+        return String.format(
+                "SessionDto[id=%d, subject='%s', speaker='%s', date='%s', normalDishId='%d', vegetarianDishId='%d', participantsIds='%d']",
+                id, subject, speaker, date, normalDishId, vegetarianDishId, participantsIds);
+    }
 }

@@ -6,9 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.format.annotation.DateTimeFormat;
-import java.sql.Date;
-
 import pt.ulisboa.tecnico.rnl.dei.deiwed.main.dto.SessionDto;
 
 @Entity
@@ -19,46 +16,40 @@ public class Session {
 	@GeneratedValue
 	private Long id;
 
-    @Column(name = "poster")
-	private byte[] poster;
-
 	@Column(name = "subject", nullable = false)
 	private String subject;
 
 	@Column(name = "speaker", nullable = false)
 	private String speaker;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Column(name = "date", nullable = false)
-	private Date date;
+	@Column(name = "date", nullable = false)
+	private String date;
 
-    @Column(name = "normal_dish", nullable = false)
-	private String normalDish;
+	@Column(name = "normal_dish_id", nullable = false)
+	private Integer normalDishId;
 
-    @Column(name = "vegetarian_dish", nullable = false)
-    private String vegetarianDish;
+	@Column(name = "vegetarian_dish_id", nullable = false)
+	private Integer vegetarianDishId;
 
-    @Column(name = "participants")
-    private String[] participants;
+	@Column(name = "participants_ids")
+	private Integer[] participantsIds;
 
 	protected Session() {
 	}
 
-	public Session(byte[] poster, String subject, String speaker, Date date,
-        String normalDish, String vegetarianDish, String[] participants) {
-		this.poster = poster;
+	public Session(String subject, String speaker, String date,
+			Integer normalDishId, Integer vegetarianDishId, Integer[] participantsIds) {
 		this.subject = subject;
 		this.speaker = speaker;
-        this.date = date;
-        this.normalDish = normalDish;
-        this.vegetarianDish = vegetarianDish;
-        this.participants = participants;
+		this.date = date;
+		this.normalDishId = normalDishId;
+		this.vegetarianDishId = vegetarianDishId;
+		this.participantsIds = participantsIds;
 	}
 
 	public Session(SessionDto sessionDto) {
-		this(sessionDto.getPoster(), sessionDto.getSubject(), sessionDto.getSpeaker(),
-        sessionDto.getDate(), sessionDto.getNormalDish(), sessionDto.getVegetarianDish(),
-        sessionDto.getParticipants());
+		this(sessionDto.getSubject(), sessionDto.getSpeaker(), sessionDto.getDate(),
+				sessionDto.getNormalDishId(), sessionDto.getVegetarianDishId(), sessionDto.getParticipantsIds());
 	}
 
 	public Long getId() {
@@ -67,14 +58,6 @@ public class Session {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public byte[] getPoster() {
-		return this.poster;
-	}
-
-	public void setPoster(byte[] poster) {
-		this.poster = poster;
 	}
 
 	public String getSubject() {
@@ -93,42 +76,42 @@ public class Session {
 		this.speaker = speaker;
 	}
 
-    public Date getDate() {
-        return this.date;
-    }
+	public String getDate() {
+		return this.date;
+	}
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+	public void setDate(String date) {
+		this.date = date;
+	}
 
-    public String getNormalDish() {
-        return this.normalDish;
-    }
+	public Integer getNormalDishId() {
+		return this.normalDishId;
+	}
 
-    public void setNormalDish(String normalDish) {
-        this.normalDish = normalDish;
-    }
+	public void setNormalDishId(Integer normalDishId) {
+		this.normalDishId = normalDishId;
+	}
 
-    public String getVegetarianDish() {
-        return this.vegetarianDish;
-    }
+	public Integer getVegetarianDishId() {
+		return this.vegetarianDishId;
+	}
 
-    public void setVegetarianDish(String vegetarianDish) {
-        this.vegetarianDish = vegetarianDish;
-    }
+	public void setVegetarianDishId(Integer vegetarianDishId) {
+		this.vegetarianDishId = vegetarianDishId;
+	}
 
-    public String[] getParticipants() {
-        return this.participants;
-    }
+	public Integer[] getParticipantsIds() {
+		return this.participantsIds;
+	}
 
-    public void setParticipants(String[] participants) {
-        this.participants = participants;
-    }
+	public void setParticipantsIds(Integer[] participantsIds) {
+		this.participantsIds = participantsIds;
+	}
 
 	@Override
 	public String toString() {
 		return String.format(
-				"Session[id=%d, poster='%s', subject='%s', speaker='%s', date='%s', normalDish='%s', vegetarianDish='%s', participants='%s']",
-				id, poster, subject, speaker, date, normalDish, vegetarianDish, participants);
+				"Session[id=%d, subject='%s', speaker='%s', date='%s', normalDishId='%d', vegetarianDishId='%d', participantsIds='%d']",
+				id, subject, speaker, date, normalDishId, vegetarianDishId, participantsIds);
 	}
 }
