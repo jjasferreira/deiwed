@@ -32,6 +32,11 @@ const router = new Router({
       name: 'sessions',
       component: () => import('@/views/deiwed/SessionsView.vue'),
     },
+    {
+      path: '/sessions/:sessionId/details',
+      name: 'details',
+      component: () => import('@/views/deiwed/SessionDetailsView.vue'),
+    }
   ],
 });
 

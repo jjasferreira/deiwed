@@ -9,22 +9,19 @@
             <v-form>
               <v-container>
                 <v-row>
-                  <v-col cols="12" md="2">
-                    <v-file-input accept="image/*" prepend-icon="mdi-camera" label="Poster (opcional)"></v-file-input>
-                  </v-col>
-                  <v-col cols="12" md="4">
+                  <v-col cols="12" md="3">
                     <v-text-field v-model="new_subject" :rules="subjectRules" label="Tema" required></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="3">
+                  <v-col cols="12" md="2">
                     <v-text-field v-model="new_speaker" label="Orador" required></v-text-field>
                   </v-col>
                   <v-col cols="12" md="2">
-                    <v-text-field v-model="new_date" :rules="dateRules" label="Data" required></v-text-field>
+                    <v-text-field v-model="new_date" :rules="dateRules" label="Data (YYYY-MM-DD)" required></v-text-field>
                   </v-col>
-                  <v-col cols="12" md="3">
+                  <v-col cols="12" md="2">
                     <v-select v-model="new_normalDishName" :items="items_normalDishNames" :rules="normalDishRules" label="Prato normal" required></v-select>
                   </v-col>
-                  <v-col cols="12" md="3">
+                  <v-col cols="12" md="2">
                     <v-select v-model="new_vegetarianDishName" :items="items_vegetarianDishNames" :rules="vegetarianDishRules" label="Prato vegetariano" required></v-select>
                   </v-col>
                   <v-col cols="12" md="1" style="text-align: left">
@@ -48,6 +45,9 @@
         no-results-text="Nenhuma sessão corresponde aos critérios indicados"
         sort-by="subject"
       >
+        <template v-slot:[`item.access`]="{ item }">
+          <v-btn @click="loadSessionDetails(item)" class="mx-2" fab dark x-small color="purple" elevation="2"><v-icon dark>mdi-arrow-right</v-icon></v-btn>
+        </template>
       </v-data-table>
     </v-card-text>
   </v-card>
@@ -64,23 +64,27 @@ import { DataTableHeader } from 'vuetify';
 @Component
 export default class SessionsView extends Vue {
 
-  items_normalDish: DishDto[] = [];
-  items_normalDishNames: string[] = [];
-  items_vegetarianDish: DishDto[] = [];
-  items_vegetarianDishNames: string[] = [];
-  items_participants: AttendeeDto[] = [];
+  items_normalDish: Array<DishDto> = [];
+  items_normalDishNames: Array<string> = [];
+  new_normalDishName = '';
+  items_vegetarianDish: Array<DishDto> = [];
+  items_vegetarianDishNames: Array<string> = [];
+  new_vegetarianDishName = '';
+  items_participants: Array<AttendeeDto> = [];
+  new_participants: Array<AttendeeDto> = [];
+  new_subject = '';
+  new_speaker = '';
+  new_date = '';
 
   sessions: SessionDto[] = [];
   headers: DataTableHeader[] = [
     { text: 'ID', value: 'id', sortable: true, filterable: true },
-    { text: 'Poster', value: 'poster', sortable: false, filterable: false },
     { text: 'Tema', value: 'subject', sortable: true, filterable: true },
     { text: 'Orador', value: 'speaker', sortable: true, filterable: false },
     { text: 'Data', value: 'date', sortable: true, filterable: true },
-    { text: 'Prato normal', value: 'normalDish', sortable: true, filterable: true },
-    { text: 'Prato vegetariano', value: 'vegetarianDish', sortable: true, filterable: true },
-    { text: 'Participantes', value: 'participants', sortable: false, filterable: false },
+    { text: 'Aceder', value: 'access', sortable: false, filterable: false },
   ];
+
   search = '';
   loading = true;
   panel = false;
@@ -92,16 +96,6 @@ export default class SessionsView extends Vue {
   dateRules = [(v: any) => !!v || 'É obrigatório indicar uma data'];
   normalDishRules = [(v: any) => !!v || 'É obrigatório indicar um prato normal'];
   vegetarianDishRules = [(v: any) => !!v || 'É obrigatório indicar um prato vegetariano'];
-
-  new_poster = undefined;
-  new_subject = '';
-  new_speaker = '';
-  new_date = '';
-  new_normalDish = new DishDto();
-  new_normalDishName = '';
-  new_vegetarianDish = new DishDto();
-  new_vegetarianDishName = '';
-  new_participants = [];
 
   async mounted() {
     await this.$store.dispatch('loading');
@@ -120,32 +114,33 @@ export default class SessionsView extends Vue {
   }
 
   async createSession() {
-    this.panel = false;
+    if (this.new_subject === '' || this.new_speaker === '' || this.new_date === '' || this.new_normalDishName === '' || this.new_vegetarianDishName === '') {
+      this.$store.dispatch('error', 'Por favor preencha todos os campos'); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(this.new_date)) {
+      this.$store.dispatch('error', 'A data deve ter o formato YYYY-MM-DD'); return; }
     await this.$store.dispatch('loading');
+    this.panel = false;
     try {
-      if (this.new_subject === '' || this.new_speaker === '' || this.new_date === '' || this.new_normalDish.name === '' || this.new_vegetarianDish.name === '') {
-        this.$store.dispatch('error', 'É obrigatório preencher todos os campos');
-        await this.$store.dispatch('clearLoading');
-        return;
-      }
-      for (let i = 0; i < this.items_normalDishNames.length; i++) {
-        if (this.new_normalDishName === this.items_normalDishNames[i]) {this.new_normalDish = this.items_normalDish[i]; break; }}
-      for (let i = 0; i < this.items_vegetarianDishNames.length; i++) {
-        if (this.new_vegetarianDishName === this.items_vegetarianDishNames[i]) {this.new_vegetarianDish = this.items_vegetarianDish[i]; break; }}
-      await RemoteServices.createSession({"id":0, "poster":this.new_poster, "subject":this.new_subject, "speaker":this.new_speaker, "date":this.new_date, "normalDish":this.new_normalDish, "vegetarianDish":this.new_vegetarianDish, "participants":this.new_participants});
+      let new_normalDishId = 0; let new_vegetarianDishId = 0; let new_participantsIds: Array<number> = [];
+      for (const d of this.items_normalDish) {if (d.name === this.new_normalDishName) {new_normalDishId = d.id; break;}}
+      for (const d of this.items_vegetarianDish) {if (d.name === this.new_vegetarianDishName) {new_vegetarianDishId = d.id; break;}}
+      await RemoteServices.createSession({"id": 0, "subject": this.new_subject, "speaker": this.new_speaker,
+      "date": this.new_date, "normalDishId": new_normalDishId, "vegetarianDishId": new_vegetarianDishId, "participantsIds": new_participantsIds});
       this.sessions = await RemoteServices.getSessions();
       this.loading = false;
-      this.new_poster = undefined;
       this.new_subject = '';
       this.new_speaker = '';
       this.new_date = '';
-      this.new_normalDish = new DishDto();
-      this.new_vegetarianDish = new DishDto();
-      this.new_participants = [];
+      this.new_normalDishName = '';
+      this.new_vegetarianDishName = '';
     } catch (error) {
       this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async loadSessionDetails(session: SessionDto) {
+    this.$router.push({ name: 'details', params: { sessionId: session.id.toString() } });
   }
 
 }
