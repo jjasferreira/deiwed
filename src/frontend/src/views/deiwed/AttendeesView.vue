@@ -127,7 +127,7 @@ export default class AttendeesView extends Vue {
     { text: 'Nome', value: 'name', sortable: true, filterable: true },
     { text: 'IST ID', value: 'istId', sortable: true, filterable: true },
     { text: 'Tipo', value: 'type', sortable: true, filterable: false },
-    { text: 'Ações', value: 'actions', sortable: false, filterable: false },
+    { text: 'Eliminar', value: 'actions', sortable: false, filterable: false },
   ];
 
   async mounted() {
@@ -166,7 +166,7 @@ export default class AttendeesView extends Vue {
   async deleteAttendee(attendee: AttendeeDto) {
     await this.$store.dispatch('loading');
     try {
-      await RemoteServices.deleteAttendee(attendee);
+      await RemoteServices.deleteAttendee(attendee.id);
       this.attendees = await RemoteServices.getAttendees();
       this.loading = false;
     } catch (error) {
